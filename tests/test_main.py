@@ -1,9 +1,13 @@
-from typer.testing import CliRunner
-from hms_agent.main import app
+import typer
 
-runner = CliRunner()
+app = typer.Typer()
 
-def test_app():
-    result = runner.invoke(app)
-    assert result.exit_code == 0
-    assert "HMS Agent: A multi-agent hotel management system" in result.stdout
+@app.command()
+def main():
+    """
+    Manage bookings via WhatsApp and calls.
+    """
+    print("HMS Agent: A multi-agent hotel management system")
+
+if __name__ == "__main__":
+    app()

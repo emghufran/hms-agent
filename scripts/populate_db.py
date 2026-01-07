@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
 
-from db_utils import Base, Location, Hotel, Room, Customer, Booking
+from db_utils import Location, Hotel, Room, Customer, Booking
 
 app = typer.Typer()
 fake = Faker()
@@ -15,12 +15,14 @@ DATABASE_URL = "sqlite:///./bookings.db"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
 
 LOCATION_DATA = {
     "USA": ["New York", "Los Angeles", "Chicago"],
@@ -36,10 +38,13 @@ ROOM_CAPACITY = {
     "Suite": 4,
 }
 
+
 @app.command()
 def populate_hotels(
     num_locations: int = typer.Option(5, help="Number of locations to create"),
-    num_hotels_per_location: int = typer.Option(2, help="Number of hotels per location"),
+    num_hotels_per_location: int = typer.Option(
+        2, help="Number of hotels per location"
+    ),
     num_rooms_per_hotel: int = typer.Option(20, help="Number of rooms per hotel"),
 ):
     """
@@ -55,7 +60,7 @@ def populate_hotels(
             name=fake.unique.company(),
             address=fake.address(),
             city=city,
-            country=country
+            country=country,
         )
         db.add(location)
     db.commit()
@@ -79,9 +84,9 @@ def populate_hotels(
             capacity = ROOM_CAPACITY[room_type]
             room = Room(
                 hotel=hotel,
-                room_number=f"{i+1}",
+                room_number=f"{i + 1}",
                 room_type=room_type,
-                price_per_night=random.randint(50, 500) * 100, # In cents
+                price_per_night=random.randint(50, 500) * 100,  # In cents
                 capacity=capacity,
             )
             db.add(room)
@@ -89,10 +94,15 @@ def populate_hotels(
     print(f"Created {num_rooms_per_hotel * len(hotels)} rooms.")
     print("Hotel and room population complete.")
 
+
 @app.command()
 def populate_bookings(
-    start_date: datetime = typer.Option(..., help="Start date for bookings in YYYY-MM-DD format"),
-    end_date: datetime = typer.Option(..., help="End date for bookings in YYYY-MM-DD format"),
+    start_date: datetime = typer.Option(
+        ..., help="Start date for bookings in YYYY-MM-DD format"
+    ),
+    end_date: datetime = typer.Option(
+        ..., help="End date for bookings in YYYY-MM-DD format"
+    ),
     num_customers: int = typer.Option(100, help="Number of customers to create"),
     num_bookings: int = typer.Option(500, help="Number of bookings to create"),
 ):
@@ -123,11 +133,15 @@ def populate_bookings(
         check_out_date = check_in_date + timedelta(days=random.randint(1, 10))
 
         # Check for overlapping bookings
-        existing_booking = db.query(Booking).filter(
-            Booking.room_id == room.id,
-            Booking.check_in_date < check_out_date,
-            Booking.check_out_date > check_in_date,
-        ).first()
+        existing_booking = (
+            db.query(Booking)
+            .filter(
+                Booking.room_id == room.id,
+                Booking.check_in_date < check_out_date,
+                Booking.check_out_date > check_in_date,
+            )
+            .first()
+        )
 
         if not existing_booking:
             booking = Booking(
@@ -138,10 +152,11 @@ def populate_bookings(
             )
             db.add(booking)
             created_bookings += 1
-            
+
     db.commit()
     print(f"Created {created_bookings} bookings.")
     print("Booking population complete.")
+
 
 if __name__ == "__main__":
     app()

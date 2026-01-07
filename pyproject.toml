@@ -3,7 +3,17 @@ name = "hms_agent"
 version = "0.1.0"
 description = "A multi-agent hotel management system for managing bookings via WhatsApp and calls."
 authors = [{ name = "Mohammad Ghufran", email = "emghufran@gmail.com" }]
-dependencies = ["typer==0.21.1", "SQLAlchemy==2.0.45", "Faker==40.1.0", "tzdata==2025.3"]
+dependencies = [
+    "typer==0.21.1",
+    "rich>=13.9.4",
+    "SQLAlchemy==2.0.45",
+    "tzdata==2025.3",
+    "fastmcp>=2.14.2",
+    "pydantic==2.11.7",
+    "typing-extensions>=4.12.2",
+    "Faker==40.1.0",
+    "uvicorn>=0.40.0",
+]
 requires-python = "==3.13.2"
 
 [build-system]
