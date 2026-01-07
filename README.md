@@ -42,13 +42,19 @@ After initializing the database (`bookings.db`) and polpulating the hotels and r
 To manage the bookings using MCP server you first need to start the MCP server using follwoing commands.
 
 ```bash
-source .venv/bin/activate
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload --app-dir src/hms_agent
+uv run uvicorn mcp_server:app --host 0.0.0.0 --port 8000 --reload --app-dir src/hms_agent
+```
+
+### 2. Run MCP client
+A basic agent based client using Ollma. Currently only capable of listing tools (to be updated soon).
+
+```bash
+uv run ./src/hms_agent/mcp_client.py --host 127.0.0.1 --port 8000
 ```
 
 ### 2. Test MCP server
 The booking functionality can be tested using a test script that check room availbility, books a room and then cancels the booking. Use following commands to test these fuctionalities using MCP.
 
 ```bash
-python -m ./src/hms_agent/test_mcp_server.py
+uv run ./src/hms_agent/tests/test_mcp_server.py
 ```

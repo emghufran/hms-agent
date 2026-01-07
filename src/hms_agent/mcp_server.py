@@ -21,6 +21,7 @@ set_db_path(DB_PATH)
 
 mcp = FastMCP("HMS MCP Server")
 
+
 @mcp.tool()
 def search_rooms(input: SearchRoomsInput):
     """Search for available rooms based on dates and capacity"""
