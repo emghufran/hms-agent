@@ -22,13 +22,11 @@ jobs:
       run: |
         pip install uv
         uv venv
-        source .venv/bin/activate
-        uv pip install -e ".[dev]"
+        uv pip sync --extra dev
     - name: Lint with ruff
       run: |
-        source .venv/bin/activate
-        ruff check .
-        ruff format .
+        uv run ruff check .
+        uv run ruff format .
     # - name: Test with pytest
     #   run: |
     #     source .venv/bin/activate
