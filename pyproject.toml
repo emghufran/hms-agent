@@ -27,11 +27,15 @@ dev-dependencies = []
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "pytest==9.0.2",
     "ruff==0.14.10",
+    "pytest==9.0.2",
 ]
 
 [project.scripts]
 hms-agent = "hms_agent.main:app"
+
+[tool.pytest.ini_options]
+testpaths = ["src/hms_agent/tests"]
+python_files = ["test_*.py", "*_test.py"]
