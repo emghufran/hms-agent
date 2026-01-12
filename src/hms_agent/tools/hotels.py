@@ -1,20 +1,20 @@
 from db.connector import get_connection
+from db.models import HotelsInput
 from db.models import HotelsOutput
 
 
-def get_hotels(location: int) -> list[HotelsOutput]:
+def get_hotels(data: HotelsInput) -> list[HotelsOutput]:
     conn = None
     try:
         conn = get_connection()
         cur = conn.cursor()
-
         cur.execute(
             """
             SELECT h.*
             FROM hotels h
-            WHERE location_id = ?
+            WHERE h.location_id = ?
             """,
-            (location),
+            (data.location_id,),
         )
 
         rows = cur.fetchall()

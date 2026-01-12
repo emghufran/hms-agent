@@ -3,7 +3,7 @@ from db.connector import get_connection
 from db.models import SearchRoomsInput, RoomOutput
 
 
-def search_available_rooms(data: SearchRoomsInput) -> List[RoomOutput]:
+def get_available_rooms(data: SearchRoomsInput) -> List[RoomOutput]:
     conn = None
     try:
         conn = get_connection()

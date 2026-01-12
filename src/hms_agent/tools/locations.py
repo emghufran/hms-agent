@@ -2,7 +2,7 @@ from db.connector import get_connection
 from db.models import LocationsOutput
 
 
-def search_locations() -> list[LocationsOutput]:
+def get_locations() -> list[LocationsOutput]:
     conn = None
     try:
         conn = get_connection()

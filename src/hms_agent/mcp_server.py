@@ -1,14 +1,15 @@
 from fastmcp import FastMCP
 from db.models import (
+    HotelsInput,
     SearchRoomsInput,
     CreateBookingInput,
     CancelBookingInput,
 )
 from db.connector import set_db_path
 
-from tools.locations import search_locations
+from tools.locations import get_locations
 from tools.hotels import get_hotels
-from tools.rooms import search_available_rooms
+from tools.rooms import get_available_rooms
 from tools.bookings import create_booking, cancel_booking
 from pathlib import Path
 
@@ -25,36 +26,48 @@ mcp = FastMCP("HMS MCP Server")
 
 
 @mcp.tool()
-def get_hotels(location_id: int):
+def search_hotels(input: HotelsInput):
     """
     List available hotels for a given location available in the system.
-    Id of location can be obtained from get_locations tool.
+    Id of location can be obtained from search_locations tool.
+    Args:
+        input (HotelsInput): Input parameters for the hotel query.
 
-    :param location_id: The id of location for which to search hotels.
-    :type location_id: int
+    Schema:
+        - location_id: Integer field (required)
+          Must be a positive integer greater than 0.
+    Returns:
+        HotelsOutput: The result of the hotel retrieval operation.
     """
-    
+
     try:
-        hotels = get_hotels()
+        hotels = get_hotels(input)
         return {"hotels": [hotel.model_dump() for hotel in hotels]}
     except Exception as e:
         return {"error": str(e), "hotels": []}
-    
+
 
 @mcp.tool()
-def get_locations():
-    """List available locations which have hotels available in the system."""
+def search_locations():
+    """
+    List available hotel locations in the system.
+
+    Returns:
+        LocationsOutput: The result of the locations retrieval operation.
+        Which can be used by hotel search tool
+    """
     try:
-        locations = search_locations()
+        locations = get_locations()
         return {"locations": [location.model_dump() for location in locations]}
     except Exception as e:
         return {"error": str(e), "locations": []}
+
 
 @mcp.tool()
 def search_rooms(input: SearchRoomsInput):
     """Search for available rooms based on dates and capacity"""
     try:
-        rooms = search_available_rooms(input)
+        rooms = get_available_rooms(input)
         return {"rooms": [room.model_dump() for room in rooms]}
     except Exception as e:
         return {"error": str(e), "rooms": []}
