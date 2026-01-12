@@ -27,7 +27,6 @@ class Customer(Base):
 class Location(Base):
     __tablename__ = "locations"
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
     address = Column(String, nullable=False)
     city = Column(String, nullable=False)
     country = Column(String, nullable=False)

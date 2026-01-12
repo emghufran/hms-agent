@@ -6,6 +6,8 @@ from db.models import (
 )
 from db.connector import set_db_path
 
+from tools.locations import search_locations
+from tools.hotels import get_hotels
 from tools.rooms import search_available_rooms
 from tools.bookings import create_booking, cancel_booking
 from pathlib import Path
@@ -21,6 +23,32 @@ set_db_path(DB_PATH)
 
 mcp = FastMCP("HMS MCP Server")
 
+
+@mcp.tool()
+def get_hotels(location_id: int):
+    """
+    List available hotels for a given location available in the system.
+    Id of location can be obtained from get_locations tool.
+
+    :param location_id: The id of location for which to search hotels.
+    :type location_id: int
+    """
+    
+    try:
+        hotels = get_hotels()
+        return {"hotels": [hotel.model_dump() for hotel in hotels]}
+    except Exception as e:
+        return {"error": str(e), "hotels": []}
+    
+
+@mcp.tool()
+def get_locations():
+    """List available locations which have hotels available in the system."""
+    try:
+        locations = search_locations()
+        return {"locations": [location.model_dump() for location in locations]}
+    except Exception as e:
+        return {"error": str(e), "locations": []}
 
 @mcp.tool()
 def search_rooms(input: SearchRoomsInput):

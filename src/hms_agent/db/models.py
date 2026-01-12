@@ -8,6 +8,17 @@ DateStr = Annotated[
 ]
 
 
+class HotelsOutput(BaseModel):
+    id: int = Field(..., gt=0)
+    name: str
+
+
+class LocationsOutput(BaseModel):
+    id: int = Field(..., gt=0)
+    city: str 
+    country: str
+
+
 class SearchRoomsInput(BaseModel):
     hotel_id: int = Field(..., gt=0)
     check_in_date: DateStr

@@ -57,7 +57,6 @@ def populate_hotels(
         country = random.choice(list(LOCATION_DATA.keys()))
         city = random.choice(LOCATION_DATA[country])
         location = Location(
-            name=fake.unique.company(),
             address=fake.address(),
             city=city,
             country=country,
