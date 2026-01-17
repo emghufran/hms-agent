@@ -53,17 +53,17 @@ def populate_hotels(
     db = next(get_db())
 
     # Create Locations
-    for _ in range(num_locations):
-        country = random.choice(list(LOCATION_DATA.keys()))
-        city = random.choice(LOCATION_DATA[country])
-        location = Location(
-            address=fake.address(),
-            city=city,
-            country=country,
-        )
-        db.add(location)
+    created_count = 0
+    for country, cities in LOCATION_DATA.items():
+        for city in cities:
+            location = Location(
+                city=city,
+                country=country,
+            )
+            db.add(location)
+            created_count += 1
     db.commit()
-    print(f"Created {num_locations} locations.")
+    print(f"Created {created_count} locations from predefined data.")
 
     # Create Hotels
     locations = db.query(Location).all()

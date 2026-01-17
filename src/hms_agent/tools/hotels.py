@@ -8,14 +8,22 @@ def get_hotels(data: HotelsInput) -> list[HotelsOutput]:
     try:
         conn = get_connection()
         cur = conn.cursor()
-        cur.execute(
-            """
-            SELECT h.*
-            FROM hotels h
-            WHERE h.location_id = ?
-            """,
-            (data.location_id,),
-        )
+        if data.location_id is not None:
+            cur.execute(
+                """
+                SELECT h.*
+                FROM hotels h
+                WHERE h.location_id = ?
+                """,
+                (data.location_id,),
+            )
+        else:
+            cur.execute(
+                """
+                SELECT h.*
+                FROM hotels h
+                """
+            )
 
         rows = cur.fetchall()
 

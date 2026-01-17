@@ -27,14 +27,17 @@ class Customer(Base):
 class Location(Base):
     __tablename__ = "locations"
     id = Column(Integer, primary_key=True)
-    address = Column(String, nullable=False)
     city = Column(String, nullable=False)
     country = Column(String, nullable=False)
 
     hotels = relationship("Hotel", back_populates="location")
 
+    __table_args__ = (
+        UniqueConstraint("city", "country", name="_city_country_uc"),
+    )
+
     def __repr__(self):
-        return f"<Location(name='{self.name}', address='{self.address}', city='{self.city}', country='{self.country}')>"
+        return f"<Location(city='{self.city}', country='{self.country}')>"
 
 
 class Hotel(Base):

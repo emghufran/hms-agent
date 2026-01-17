@@ -137,17 +137,54 @@ def main():
         print(f"   Response: {tools_result}")
     print()
 
+    # Step 2.1: Search for hotels (no location)
+    print("2.1 Searching for all hotels...")
+    hotels_all_result = client.call_tool("search_hotels", {})
+    if hotels_all_result and "result" in hotels_all_result:
+        content = hotels_all_result["result"].get("content", [])
+        if content:
+            result_data = json.loads(content[0].get("text", "{}"))
+            hotels = result_data.get("hotels", [])
+            print(f"   ✓ Found {len(hotels)} hotels total")
+    else:
+        print(f"   Failed: {hotels_all_result}")
+    print()
+
+    # Step 2.2: Create and Search Customer
+    print("2.2 Testing customer management...")
+    customer_params = {"name": "Alice Smith", "phone_number": "555-0123"}
+    print(f"   Creating customer: {customer_params['name']}...")
+    create_res = client.call_tool("create_customer_entry", customer_params)
+    
+    if create_res and "result" in create_res:
+        print("   ✓ Success!")
+        
+        print(f"   Searching for customer by phone: {customer_params['phone_number']}...")
+        search_res = client.call_tool("search_customers", {"phone_number": customer_params['phone_number']})
+        if search_res and "result" in search_res:
+            content = search_res["result"].get("content", [])
+            if content:
+                res_data = json.loads(content[0].get("text", "{}"))
+                customers = res_data.get("customers", [])
+                if customers:
+                    print(f"   ✓ Found customer: {customers[0]['name']} (ID: {customers[0]['id']})")
+                else:
+                    print("   Failed: Customer not found after creation")
+        else:
+            print(f"   Search Failed: {search_res}")
+    else:
+        print(f"   Creation Failed: {create_res}")
+    print()
+
     # Step 3: Search for rooms
     print("3. Searching for available rooms...")
     search_result = client.call_tool(
         "search_rooms",
         {
-            "input": {
-                "hotel_id": 1,
-                "check_in_date": "2026-01-15",
-                "check_out_date": "2026-01-20",
-                "min_capacity": 2,
-            }
+            "hotel_id": 1,
+            "check_in_date": "2026-01-15",
+            "check_out_date": "2026-01-20",
+            "min_capacity": 2,
         },
     )
 
@@ -171,12 +208,10 @@ def main():
                 booking_result = client.call_tool(
                     "create_reservation",
                     {
-                        "input": {
-                            "customer_id": 1,
-                            "room_id": room_id,
-                            "check_in_date": "2026-01-15",
-                            "check_out_date": "2026-01-20",
-                        }
+                        "customer_id": 1,
+                        "room_id": room_id,
+                        "check_in_date": "2026-01-15",
+                        "check_out_date": "2026-01-20",
                     },
                 )
 
@@ -195,7 +230,7 @@ def main():
             if booking_id:
                 print(f"\n5. Cancelling reservation {booking_id}...")
                 cancel_result = client.call_tool(
-                    "cancel_reservation", {"input": {"booking_id": booking_id}}
+                    "cancel_reservation", {"booking_id": booking_id}
                 )
 
                 if cancel_result and "result" in cancel_result:
