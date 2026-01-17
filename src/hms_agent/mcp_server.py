@@ -58,7 +58,9 @@ def search_locations():
 
 
 @mcp.tool()
-def search_rooms(hotel_id: int, check_in_date: str, check_out_date: str, min_capacity: int):
+def search_rooms(
+    hotel_id: int, check_in_date: str, check_out_date: str, min_capacity: int
+):
     """
     Search for available rooms in a specific hotel for a given date range and capacity.
     Returns a list of rooms with their ID, type, and nightly price.
@@ -70,7 +72,7 @@ def search_rooms(hotel_id: int, check_in_date: str, check_out_date: str, min_cap
             hotel_id=hotel_id,
             check_in_date=check_in_date,
             check_out_date=check_out_date,
-            min_capacity=min_capacity
+            min_capacity=min_capacity,
         )
         rooms = get_available_rooms(data)
         return {"rooms": [room.model_dump() for room in rooms]}
@@ -79,7 +81,9 @@ def search_rooms(hotel_id: int, check_in_date: str, check_out_date: str, min_cap
 
 
 @mcp.tool()
-def create_reservation(customer_id: int, room_id: int, check_in_date: str, check_out_date: str):
+def create_reservation(
+    customer_id: int, room_id: int, check_in_date: str, check_out_date: str
+):
     """
     Finalize and create a hotel booking.
     Requires a valid customer ID, room ID, and dates (YYYY-MM-DD).
@@ -90,7 +94,7 @@ def create_reservation(customer_id: int, room_id: int, check_in_date: str, check
             customer_id=customer_id,
             room_id=room_id,
             check_in_date=check_in_date,
-            check_out_date=check_out_date
+            check_out_date=check_out_date,
         )
         result = create_booking(data)
         return result.model_dump()

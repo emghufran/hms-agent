@@ -155,19 +155,25 @@ def main():
     customer_params = {"name": "Alice Smith", "phone_number": "555-0123"}
     print(f"   Creating customer: {customer_params['name']}...")
     create_res = client.call_tool("create_customer_entry", customer_params)
-    
+
     if create_res and "result" in create_res:
         print("   ✓ Success!")
-        
-        print(f"   Searching for customer by phone: {customer_params['phone_number']}...")
-        search_res = client.call_tool("search_customers", {"phone_number": customer_params['phone_number']})
+
+        print(
+            f"   Searching for customer by phone: {customer_params['phone_number']}..."
+        )
+        search_res = client.call_tool(
+            "search_customers", {"phone_number": customer_params["phone_number"]}
+        )
         if search_res and "result" in search_res:
             content = search_res["result"].get("content", [])
             if content:
                 res_data = json.loads(content[0].get("text", "{}"))
                 customers = res_data.get("customers", [])
                 if customers:
-                    print(f"   ✓ Found customer: {customers[0]['name']} (ID: {customers[0]['id']})")
+                    print(
+                        f"   ✓ Found customer: {customers[0]['name']} (ID: {customers[0]['id']})"
+                    )
                 else:
                     print("   Failed: Customer not found after creation")
         else:

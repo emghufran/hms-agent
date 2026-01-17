@@ -14,7 +14,7 @@ def get_customer(data: CustomerSearchInput) -> list[CustomerOutput]:
         if data.name:
             query += " AND name LIKE ?"
             params.append(f"%{data.name}%")
-        
+
         if data.phone_number:
             query += " AND phone_number = ?"
             params.append(data.phone_number)

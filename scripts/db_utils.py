@@ -32,9 +32,7 @@ class Location(Base):
 
     hotels = relationship("Hotel", back_populates="location")
 
-    __table_args__ = (
-        UniqueConstraint("city", "country", name="_city_country_uc"),
-    )
+    __table_args__ = (UniqueConstraint("city", "country", name="_city_country_uc"),)
 
     def __repr__(self):
         return f"<Location(city='{self.city}', country='{self.country}')>"
