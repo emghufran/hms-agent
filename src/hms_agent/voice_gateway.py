@@ -14,17 +14,13 @@ import piper
 from huggingface_hub import hf_hub_download
 
 from agent import get_agent, handle_user_message
-from llama_index.tools.mcp import BasicMCPClient, McpToolSpec
-from llama_index.core.workflow import Context
+from pydantic_ai.messages import ModelMessage
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # FastAPI instance is initialized later with lifespan
-
-# MCP Setup
-MCP_SERVER_URL = "http://127.0.0.1:8000/mcp"
 
 # AI Models Setup
 BASE_DIR = Path(__file__).parent
@@ -99,24 +95,22 @@ app = FastAPI(title="HMS Voice Gateway", lifespan=lifespan)
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     logger.info("WebSocket connection established")
-    
-    # Initialize Agent for this session
-    mcp_client = BasicMCPClient(MCP_SERVER_URL)
-    mcp_tool = McpToolSpec(client=mcp_client)
-    agent = await get_agent(mcp_tool)
-    agent_context = Context(agent)
-    
+
+    # Initialize Agent for this session (PydanticAI)
+    agent = await get_agent()
+    message_history: list[ModelMessage] = []  # Track conversation history
+
     # Audio accumulation buffer
     audio_buffer = []
-    
+
     try:
         while True:
             message = await websocket.receive()
-            
+
             if "text" in message:
                 user_text = message["text"]
                 logger.info(f"Received text message: {user_text}")
-                
+
                 try:
                     data = json.loads(user_text)
                     if data.get("type") == "end_audio":
@@ -124,29 +118,34 @@ async def websocket_endpoint(websocket: WebSocket):
                         if audio_buffer:
                             audio_np = np.concatenate(audio_buffer)
                             audio_buffer = []  # Reset buffer
-                            
+
                             # Transcribe
                             segments, info = stt_model.transcribe(audio_np, beam_size=5)
                             transcription = " ".join([segment.text for segment in segments]).strip()
-                            
+
                             if transcription:
                                 logger.info(f"Transcribed: {transcription}")
                                 await websocket.send_json({"type": "transcription", "content": transcription})
-                                
-                                # Process with agent
-                                response = await handle_user_message(transcription, agent, agent_context, verbose=True)
+
+                                # Process with agent (updated for PydanticAI)
+                                response = await handle_user_message(
+                                    transcription, agent, message_history, verbose=True
+                                )
                                 await websocket.send_json({"type": "text", "content": response})
-                                
+
                                 # Synthesize and send audio response
+                                # NOTE: Audio functionality needs to be revisited
                                 audio_bytes = synthesize_speech(response)
                                 if audio_bytes:
                                     await websocket.send_bytes(audio_bytes)
                         continue
                 except:
                     pass
-                
-                # Handle direct text input
-                response = await handle_user_message(user_text, agent, agent_context, verbose=True)
+
+                # Handle direct text input (updated for PydanticAI)
+                response = await handle_user_message(
+                    user_text, agent, message_history, verbose=True
+                )
                 await websocket.send_json({"type": "text", "content": response})
                 
             elif "bytes" in message:

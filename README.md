@@ -47,7 +47,8 @@ Open **[http://localhost:8001](http://localhost:8001)** in your browser.
 You can also interact with the system directly through terminal-based clients.
 
 ### Terminal Agent (Full Reasoning)
-The full agent with the complete booking lifecycle and reliability rules:
+The full agent with the complete booking lifecycle and reliability rules.
+**Powered by PydanticAI + qwen2.5:14b for better tool calling:**
 ```bash
 uv run src/hms_agent/agent.py
 ```
@@ -73,3 +74,14 @@ Verify specific tool logic and data consistency:
 ```bash
 uv run src/hms_agent/tests/verify_tools.py
 ```
+
+---
+
+## 📚 Documentation
+
+For developers working on this codebase:
+
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive guide for AI assistants and developers. Start here for architecture overview, quick start, and common tasks.
+- **[CODEBASE_INDEX.md](CODEBASE_INDEX.md)** - Complete file reference with descriptions of every module, function, and component.
+- **[PATTERNS.md](PATTERNS.md)** - Architectural patterns, coding conventions, and best practices to maintain consistency.
+- **[project_plan.md](project_plan.md)** - Original design document with implementation roadmap and technical choices.
